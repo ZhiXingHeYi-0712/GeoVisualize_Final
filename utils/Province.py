@@ -18,11 +18,12 @@ class Province():
 
     def generateProvinceData(self):
         fua_info = None
+        gdf = gpd.read_file('data/全国市级边界_融合/CN-shi-A-dissolve.shp')
         for i, lucc in enumerate(self.luccs):
             if i == 0:
-                fua_info = lucc.getSubregionFUA()
+                fua_info = lucc.getSubregionFUA(gdf=gdf)
             else:
-                fua_info = fua_info.join(lucc.getSubregionFUA(False))
+                fua_info = fua_info.join(lucc.getSubregionFUA(first=False, gdf=gdf))
         self.FUAs: gpd.GeoDataFrame = fua_info
 
     def plotProvince(self, year: int, cmap: str = 'OrRd',

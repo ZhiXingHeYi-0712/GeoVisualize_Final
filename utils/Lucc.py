@@ -23,11 +23,14 @@ class Lucc():
     def initRasterData(self):
         self.raster_data: rasterio.DatasetReader = rasterio.open(self.data_position)
 
-    def getSubregionFUA(self, first: bool = True) -> gpd.GeoDataFrame:
+    def getSubregionFUA(self, first: bool = True, gdf: gpd.GeoDataFrame = None) -> gpd.GeoDataFrame:
         fua_column_name = 'FUA_{}'.format(self.year)
         lucc: np.ndarray = self.raster_data.read(1)
         lucc = np.where((lucc >= 51) & (lucc <= 53), 1, 0)
-        gdf = gpd.read_file('data/全国市级边界/CN-shi-A.shp')
+
+        if type(gdf) == type(None):
+            gdf = gpd.read_file('data/全国市级边界_融合/CN-shi-A-dissolve.shp')
+
         gdf = gdf[gdf['F4'] == self.province_zh]
         stat_result = zonal_stats(gdf, lucc,
                                   stats=['count', 'sum'], affine=self.raster_data.transform,
