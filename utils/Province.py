@@ -3,6 +3,8 @@ import geopandas as gpd
 import rasterio.mask
 import matplotlib.pyplot as plt
 
+import os
+
 
 class Province():
     def __init__(self, province: str, province_zh: str):
@@ -29,6 +31,7 @@ class Province():
     def plotProvince(self, year: int, cmap: str = 'OrRd',
                      scheme: str = 'quantiles', scheme_kinds: int = 5,
                      title: str = None, save_file: bool = False, save_filename: str = None):
+
         pic: plt.Axes = self.FUAs.plot(column='FUA_{}'.format(year), cmap=cmap,
                                        scheme=scheme, legend=True,
                                        edgecolor='black', linewidth=0.3,
@@ -67,3 +70,14 @@ class Province():
 
         plot_data.plot()
         plt.show()
+
+    def save_data(self, file_name: str = None):
+        if file_name == None:
+            file_name = 'FUA_'+self.province
+        if file_name.split('.')[-1] != 'shp':
+            file_name += '.shp'
+
+        file_path = os.path.join('processed_data', file_name)
+        # self.FUAs.set_crs(epsg=7024, inplace=True)
+        # self.FUAs.to_crs(epsg=4326, inplace=True)
+        self.FUAs.to_file(file_path, encoding='utf-8' ,driver='ESRI Shapefile')
